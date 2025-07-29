@@ -1,0 +1,2281 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Thêm viewport để tối ưu hóa di động -->
+    <title>越南语听力练习</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            text-align: center; 
+            margin: 0; 
+            padding-bottom: 300px; /* Mặc định cho màn hình lớn */
+            background-color: #f7fbf3; /*f7fbf3  3f4040*/
+        }
+        #gameContainer {
+            display: block;
+            min-height: calc(100vh - 150px); /* Đảm bảo nội dung chiếm đủ chiều cao màn hình */
+        }
+        #infoBox { 
+            width: 95%; 
+            max-width: 700px;
+            min-height: 100px; 
+            margin: 0 auto; 
+            border: 2px solid #91b66f; /*041b31 1f4263*/
+            background: #85ae5f; /*ecf2e4 fefefc*/
+            color: #ffffff; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: clamp(40px, 5vw, 60px);
+            font-weight: bold;
+        }
+        #contactBox { 
+            width: 90%; 
+            max-width: 700px;
+            min-height: 25px; 
+            margin: 0px auto; 
+            border: 2px solid #91b66f; 
+            background: #85ae5f; 
+            color: #f1c232; 
+            display: flex; 
+            align-items: center; 
+            justify-content: left; 
+            padding-left: 20px;
+            font-size: clamp(16px, 2vw, 20px); 
+            font-weight: bold;
+        }
+        #instructionBox { 
+            width: 90%; 
+            max-width: 700px;
+            min-height: 25px; 
+            margin: 0px auto; 
+            border: 2px solid #91b66f; 
+            background: #85ae5f; 
+            color: #f7e19c; 
+            display: flex; 
+            align-items: center; 
+            justify-content: left; 
+            padding-left: 20px;
+            font-size: clamp(16px, 2vw, 20px); 
+            font-weight: bold;
+        }
+        #controls { 
+            position: fixed; /* Cố định ở cuối màn hình */
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 95%;
+            max-width: 800px; /* Giới hạn chiều rộng tối đa */
+            background: #f7fbf3;
+                        border: 3px solid #f7fbf3;                        
+            padding: 10px 0; 
+           /* box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2); */
+            z-index: 1000; 
+        }
+        #controls div {
+            margin: 5px 0; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        button { 
+            padding: 8px 8px; 
+            margin: 0 5px; 
+            cursor: pointer; 
+            border: 2px solid #85ae5f; 
+            background: #85ae5f; /*192332*/
+                        box-shadow: 0 5px 5px rgba(0, 0, 0, 0.2);
+            color: #fffbef; 
+            font-size: 28px; 
+            border-radius: 5px; 
+        }
+        #sentenceNumber { 
+            width: 50px; 
+            padding: 10px; 
+            text-align: center; 
+            border: 3px solid #85ae5f; /*041b31 68838B*/
+            background: #f1cc76; 
+            color: #000; 
+            border-radius: 10px; 
+            font-size: 16px; 
+            -moz-appearance: textfield; 
+        }
+        #sentenceNumber::-webkit-inner-spin-button, 
+        #sentenceNumber::-webkit-outer-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
+        }
+        #sentenceNumber:disabled { 
+            background: #eee; 
+        }
+        .disabled { 
+            cursor: not-allowed; 
+            pointer-events: none; 
+        }
+        .active-mode { 
+            border: 2px solid #fed16a; 
+        }
+        #indicator { 
+            width: 95%;
+                        max-width: 700px; 
+            min-height: 50px; 
+            margin: 10px auto; 
+                        padding: 5px;
+            border: 3px solid #fed16a; 
+            background: #ffffe0; 
+            border-radius: 10px; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+        }
+        #optionsContainer {
+            width: 100%;
+            max-width: 700px;
+            margin: 10px auto;
+        }
+        .optionBtn {
+            width: 95%; 
+            max-width: 700px;
+            padding: 10px;
+            margin: 5px 0;
+            border: 2px solid #ffffff;
+            background: #ffffff; /*E6EDD9*/
+            color: #000000;
+                        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            font-size: 30px;
+            text-align: left;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .optionBtn:hover {
+            background: #D2E4C4;
+        }
+        .correct {
+            background: #B7D7AA !important;
+        }
+        .wrong {
+            background: #CE6D5E !important;
+        }
+        #score { 
+            display: none; 
+            width: 100%;
+            max-width: 700px;
+            margin: 10px auto; 
+            color: #FF6820; 
+            font-size: 30px; 
+            text-align: center;
+        }
+        #wrongSentences { 
+            display: none; 
+            width: 95%; 
+            max-width: 700px; 
+            margin: 10px auto; 
+            padding: 10px; 
+            border: 2px solid #CE6D5E; 
+            background: #FFF0F0; 
+            color: #CE6D5E; 
+            font-size: 30px; 
+            text-align: left; 
+            border-radius: 5px; 
+        }
+        #results { 
+            display: none; 
+            width: 95%;
+            max-width: 700px;        
+            margin: 10px auto; 
+            padding: 10px; 
+            border: 2px solid #734A2E; 
+            background: #fffbef; 
+            color: #000; 
+            font-size: 30px; 
+            text-align: left; 
+            border-radius: 5px; 
+            white-space: pre-line;
+        }
+
+        /* Media query cho thiết bị di động */
+        @media (max-width: 768px) {
+            body {
+                padding-bottom: 200px; /* Giảm padding-bottom cho điện thoại */
+            }
+            #controls {
+                padding: 5px 0; /* Giảm padding */
+            }
+            button {
+                padding: 6px 6px; /* Giảm kích thước nút */
+                font-size: 20px; /* Giảm kích thước chữ */
+            }
+            #sentenceNumber {
+                width: 40px; /* Giảm chiều rộng */
+                padding: 8px; /* Giảm padding */
+                font-size: 14px; /* Giảm kích thước chữ */
+            }
+            .optionBtn {
+                font-size: 20px; /* Giảm kích thước chữ cho đáp án */
+                padding: 8px; /* Giảm padding */
+            }
+            #infoBox {
+                font-size: clamp(30px, 4vw, 40px); /* Giảm kích thước chữ */
+            }
+            #contactBox, #instructionBox {
+                font-size: clamp(14px, 2vw, 16px); /* Giảm kích thước chữ */
+            }
+            #indicator {
+                min-height: 40px; /* Giảm chiều cao tối thiểu */
+            }
+            #results, #wrongSentences, #score {
+                font-size: 24px; /* Giảm kích thước chữ */
+                                width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <div id="infoBox">习得越南语<br>听力练习</div>
+        <div id="contactBox">讲师-阮玉煌 | Weixin：XiDeYueNanYu</div>
+        <div id="instructionBox">选择与播放内容相符的选项</div>
+        <div id="indicator"></div>
+        <div id="optionsContainer"></div>
+        <div id="results"></div>
+        <div id="score">0/0</div>
+        <div id="wrongSentences"></div>
+    </div>
+    <div id="controls">
+        <div>
+            <button id="freeModeBtn" class="active-mode">自由模式</button>
+            <button id="testModeBtn">作业模式</button>
+        </div>
+        <div>
+            <button id="autoContinueBtn">自动继续</button>
+            <button id="showHideBtn">显示-隐藏</button>
+        </div>
+        <div>
+            <button id="prevBtn">◀</button>
+            <input type="text" id="sentenceNumber" inputmode="numeric" pattern="[0-9]*">
+            <button id="nextBtn">▶</button>
+            <button id="replayBtn">再听一遍</button>
+        </div>
+    </div>
+    <audio id="mainAudio" src="audio.mp3"></audio>
+    <audio id="correctAudio" src="Dung.mp3"></audio>
+    <audio id="wrongAudio" src="Sai.mp3"></audio>
+
+    <script>
+        const audio = document.getElementById('mainAudio');
+        const correctAudio = document.getElementById('correctAudio');
+        const wrongAudio = document.getElementById('wrongAudio');
+        const indicator = document.getElementById('indicator');
+        const sentenceNumber = document.getElementById('sentenceNumber');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const replayBtn = document.getElementById('replayBtn');
+        const freeModeBtn = document.getElementById('freeModeBtn');
+        const testModeBtn = document.getElementById('testModeBtn');
+        const autoContinueBtn = document.getElementById('autoContinueBtn');
+        const showHideBtn = document.getElementById('showHideBtn');
+        const scoreDisplay = document.getElementById('score');
+        const wrongSentencesDisplay = document.getElementById('wrongSentences');
+        const optionsContainer = document.getElementById('optionsContainer');
+        const resultsDisplay = document.getElementById('results');
+
+        const buttons = [prevBtn, nextBtn, replayBtn, freeModeBtn, testModeBtn, autoContinueBtn, showHideBtn];
+
+const sentences = [
+    {
+        "audioFile": "audio.mp3",
+        "start": 0.871083,
+        "end": 2.921083,
+        "correctAnswer": "Đây là anh Ba, bạn tôi.",
+        "translation": "这是阿三，我的朋友。",
+        "options": [
+            "Đây là ảnh Ba, bạn tôi.",
+            "Đây là anh Ba, bản tôi.",
+            "Đây là anh La, bạn tôi.",
+            "Đây là anh Ba, bạn tôi."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 3.421083,
+        "end": 4.551083,
+        "correctAnswer": "Đây là cái gì?",
+        "translation": "这是什么？",
+        "options": [
+            "Đây là cải gì?",
+            "Đây là cái chi?",
+            "Đây là cái gì?",
+            "Đây là cái dì?"
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 4.821083,
+        "end": 6.001083,
+        "correctAnswer": "Đây là cái bàn.",
+        "translation": "这是桌子。",
+        "options": [
+            "Đây là cái bàng.",
+            "Đây là cai bàn.",
+            "Đây là cái ban.",
+            "Đây là cái bàn."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 6.411083,
+        "end": 7.541083,
+        "correctAnswer": "Đây là con gì?",
+        "translation": "这是什么动物？",
+        "options": [
+            "Đây là con gì?",
+            "Đây là côn gì?",
+            "Đây là còn gì?",
+            "Đây là con dí?"
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 7.871083,
+        "end": 9.141083,
+        "correctAnswer": "Đây là con gà.",
+        "translation": "这是一只鸡。",
+        "options": [
+            "Đây là cơn gà.",
+            "Đây là con gá.",
+            "Đây là con gà.",
+            "Đây là con cá."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 9.471083,
+        "end": 11.581083,
+        "correctAnswer": "Kia là chị Ly, bạn tôi.",
+        "translation": "那是(阿)丽，我的朋友。",
+        "options": [
+            "Kia là chị Ly, bạn tôi.",
+            "Kia là chị Lý, bản tôi.",
+            "Kia là chị Hy, bạn tôi.",
+            "Kia là chỉ Ly, bạn tôi."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 12.081083,
+        "end": 14.301083,
+        "correctAnswer": "Đó là chị Ly, bạn tôi.",
+        "translation": "那是(阿)丽，我的朋友。",
+        "options": [
+            "Đó là chị Lý, bạn tôi.",
+            "Đó là chị Ly, bạn tôi.",
+            "Đó là chị Ly, bạn tui.",
+            "Đó là chị Ny, bạn tôi."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 14.791083,
+        "end": 16.911083,
+        "correctAnswer": "Đấy là chị Ly, bạn tôi.",
+        "translation": "那是(阿)丽，我的朋友。",
+        "options": [
+            "Đấy là chị Ly, bạn tôi.",
+            "Đấy là chị Ly, bạn tòi.",
+            "Đấy là chỉ Ly, bạn tôi.",
+            "Đấy là chị Ni, bạn tôi."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 17.441083,
+        "end": 18.621083,
+        "correctAnswer": "Đây là cái gì?",
+        "translation": "这是什么？",
+        "options": [
+            "Đây là cái gì?",
+            "Đây là cải gì?",
+            "Đây là cái dì?",
+            "Đây là cai gì?"
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 19.001083,
+        "end": 20.461083,
+        "correctAnswer": "Đây là cái bút chì.",
+        "translation": "这是一支铅笔。",
+        "options": [
+            "Đây là cái búc chì.",
+            "Đây là cai bút chì.",
+            "Đây là cái bút chi.",
+            "Đây là cái bút chì."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 20.851083,
+        "end": 22.091083,
+        "correctAnswer": "Đấy là cái gì?",
+        "translation": "那是什么？",
+        "options": [
+            "Đấy là cái gì?",
+            "Đấy là cải gì?",
+            "Đấy là cái dì?",
+            "Đấy là cái chi?"
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 22.331083,
+        "end": 23.531083,
+        "correctAnswer": "Đấy là cái đèn.",
+        "translation": "那是灯。",
+        "options": [
+            "Đấy là cái đen.",
+            "Đấy là cái đền.",
+            "Đấy là cái đèn.",
+            "Đấy là cai đèn."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 24.061083,
+        "end": 25.341083,
+        "correctAnswer": "Kia là cái gì?",
+        "translation": "那是什么？",
+        "options": [
+            "Kia là cái gì?",
+            "Kia là cai gì?",
+            "Kia là cái chi?",
+            "Kia là cải gì?"
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 25.691083,
+        "end": 27.081083,
+        "correctAnswer": "Kia là ngôi nhà.",
+        "translation": "那是一栋房子。",
+        "options": [
+            "Kia là ngói nhà.",
+            "Kia là ngôi nhá.",
+            "Kia là ngôi nhà.",
+            "Kia là ngô nhà."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 27.621083,
+        "end": 28.871083,
+        "correctAnswer": "Đó là cái gì?",
+        "translation": "那是什么？",
+        "options": [
+            "Đó là cai gì?",
+            "Đó là cái dì?",
+            "Đó là cái gì?",
+            "Đó là cải gì?"
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 29.161083,
+        "end": 30.411083,
+        "correctAnswer": "Đó là cái bảng.",
+        "translation": "那是黑板。",
+        "options": [
+            "Đó là cái báng.",
+            "Đó là cái bàng.",
+            "Đó là cái bảng.",
+            "Đó là cai bảng."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 30.941083,
+        "end": 32.111083,
+        "correctAnswer": "Đây là cái cốc.",
+        "translation": "这是杯子。",
+        "options": [
+            "Đơi là cái cốp.",
+            "Đơi là cấy cốc.",
+            "Đây là cấy cốc.",
+            "Đây là cái cốc."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 32.501083,
+        "end": 33.891083,
+        "correctAnswer": "Đấy là cái bút bi.",
+        "translation": "那是圆珠笔。",
+        "options": [
+            "Đấy là cái búc bi.",
+            "Đấy là cái bút bi.",
+            "Đấy là cái bút bì.",
+            "Đấy là cai bút bi."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 34.351083,
+        "end": 35.721083,
+        "correctAnswer": "Kia là cái kính mắt.",
+        "translation": "那是眼镜。",
+        "options": [
+            "Kia là cái kình mắt.",
+            "Kia là cai kính mắt.",
+            "Kia là cái kính mát.",
+            "Kia là cái kính mắt."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 36.161083,
+        "end": 37.301083,
+        "correctAnswer": "Đó là cái mũ.",
+        "translation": "那是帽子。",
+        "options": [
+            "Đó là cái mụ.",
+            "Đó là cai mũ.",
+            "Đó là cái mũ.",
+            "Đó là cái mú."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 37.861083,
+        "end": 39.521083,
+        "correctAnswer": "Đây là cái điện thoại di dộng.",
+        "translation": "这是手机。",
+        "options": [
+            "Đây là cái điện thoại di động.",
+            "Đây là cái điển thoại di dộng.",
+            "Đây là cái điện thoại dì dộng.",
+            "Đây là cái điện thoại di dộng."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 40.031083,
+        "end": 41.521083,
+        "correctAnswer": "Kia là cái ti vi.",
+        "translation": "那是电视。",
+        "options": [
+            "Kia là cái ti vi.",
+            "Kia là cái ti vị.",
+            "Kia là cai ti vi.",
+            "Kia là cái ti bí."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 42.051083,
+        "end": 43.361083,
+        "correctAnswer": "Đó là cái ghế.",
+        "translation": "那是椅子。",
+        "options": [
+            "Đó là cai ghế.",
+            "Đó là cái ghé.",
+            "Đó là cái ghế.",
+            "Đó là cái kê."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 43.791083,
+        "end": 45.121083,
+        "correctAnswer": "Đây là cái xe đạp.",
+        "translation": "这是自行车。",
+        "options": [
+            "Đây là cái xe đạp.",
+            "Đây là cai xe đạp.",
+            "Đây là cái xê đạp.",
+            "Đây là cái xe đáp."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 45.651083,
+        "end": 47.481083,
+        "correctAnswer": "Kia là cái đồng hồ đeo tay.",
+        "translation": "那是手表。",
+        "options": [
+            "Kia là cái đồng hồ đeo tai.",
+            "Kia là cái đồng hồ deo tay.",
+            "Kia là cai đồng hồ đeo tay.",
+            "Kia là cái đồng hồ đeo tay."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 48.021083,
+        "end": 49.961083,
+        "correctAnswer": "Kia là cái đồng hồ treo tường.",
+        "translation": "那是挂钟。",
+        "options": [
+            "Kia là cái đồng hồ treo tường.",
+            "Kia là cái đồng hồ cheo tường.",
+            "Kia là cai đồng hồ treo tường.",
+            "Kia là cái đòng hồ treo tường."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 50.611083,
+        "end": 51.891083,
+        "correctAnswer": "Đó là cái ví.",
+        "translation": "那是钱包。",
+        "options": [
+            "Đó là cái vỉ.",
+            "Đó là cái ví.",
+            "Đó là cai ví.",
+            "Đó là cái vĩ."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 52.361083,
+        "end": 53.821083,
+        "correctAnswer": "Đây là cái chìa khóa.",
+        "translation": "这是钥匙。",
+        "options": [
+            "Đây là cái chìa khoá.",
+            "Đây là cái chía khóa.",
+            "Đây là cái chìa khóa.",
+            "Đây là cai chìa khóa."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 54.311083,
+        "end": 55.591083,
+        "correctAnswer": "Đấy là đôi tất.",
+        "translation": "那是一双袜子。",
+        "options": [
+            "Đấy là đôi tất.",
+            "Đấy là đôi tắt.",
+            "Đấy là đôi tật.",
+            "Đấy là đoi tất."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 56.201083,
+        "end": 57.451083,
+        "correctAnswer": "Kia là chiếc tất.",
+        "translation": "那是一只袜子。",
+        "options": [
+            "Kia là chiếc tắt.",
+            "Kia là chiếc tất.",
+            "Kia là chiếc tật.",
+            "Kia là chiếc tấc."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 57.811083,
+        "end": 59.101083,
+        "correctAnswer": "Đó là chiếc lá.",
+        "translation": "那是一片叶子。",
+        "options": [
+            "Đó là chiếc lả.",
+            "Đó là chiếc lá.",
+            "Đó là chiệc lá.",
+            "Đó là chiếc lạ."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 59.521083,
+        "end": 60.711083,
+        "correctAnswer": "Đây là chiếc dép.",
+        "translation": "这是一只拖鞋。",
+        "options": [
+            "Đây là chiệc dép.",
+            "Đây là chiếc dẹp.",
+            "Đây là chiếc dép.",
+            "Đây là chiếc đép."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 61.221083,
+        "end": 62.531083,
+        "correctAnswer": "Đấy là đôi dép.",
+        "translation": "那是一双拖鞋。",
+        "options": [
+            "Đấy là đôi dép.",
+            "Đấy là đoi dép.",
+            "Đấy là đôi dẹp.",
+            "Đấy là đôi đép."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 62.991083,
+        "end": 64.341083,
+        "correctAnswer": "Kia là chiếc giày.",
+        "translation": "那是一只鞋。",
+        "options": [
+            "Kia là chiếc giày.",
+            "Kia là chiếc dài.",
+            "Kia là chiếc dày.",
+            "Kia là chiệc giày."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 64.761083,
+        "end": 66.111083,
+        "correctAnswer": "Đó là đôi giày.",
+        "translation": "那是一双鞋。",
+        "options": [
+            "Đó là đôi dài.",
+            "Đó là đôi giày.",
+            "Đó là đoi giày.",
+            "Đó là đôi dày."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 66.541083,
+        "end": 67.721083,
+        "correctAnswer": "Đây là cái gì?",
+        "translation": "这是什么？",
+        "options": [
+            "Đây là cái gì?",
+            "Đây là cai gì?",
+            "Đây là cái dì?",
+            "Đây là cải gì?"
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 68.071083,
+        "end": 69.511083,
+        "correctAnswer": "Đây là quyển vở.",
+        "translation": "这是一本练习本。",
+        "options": [
+            "Đây là quyển vở.",
+            "Đây là quyển vỡ.",
+            "Đây là quển vở.",
+            "Đây là quyển vởt."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 69.871083,
+        "end": 71.051083,
+        "correctAnswer": "Đấy là cái gì?",
+        "translation": "那是什么？",
+        "options": [
+            "Đấy là cái gì?",
+            "Đấy là cái dì?",
+            "Đấy là cai gì?",
+            "Đấy là cải gì?"
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 71.431083,
+        "end": 72.991083,
+        "correctAnswer": "Đấy là cuốn tạp chí.",
+        "translation": "那是一本杂志。",
+        "options": [
+            "Đấy là cuốn tạp chí.",
+            "Đấy là cuốn tập chí.",
+            "Đấy là cuốn tập trí.",
+            "Đấy là cuốn tạp chị."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 73.551083,
+        "end": 74.801083,
+        "correctAnswer": "Kia là cái gì?",
+        "translation": "那是什么？",
+        "options": [
+            "Kia là cái gì?",
+            "Kia là cải gì?",
+            "Kia là cái dì?",
+            "Kia là cai gì?"
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 75.071083,
+        "end": 76.361083,
+        "correctAnswer": "Kia là quyển lịch.",
+        "translation": "那是一本日历。",
+        "options": [
+            "Kia là quyển lịch.",
+            "Kia là quyển lịnh.",
+            "Kia là quển lịch.",
+            "Kia là quyển lích."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 76.791083,
+        "end": 78.011083,
+        "correctAnswer": "Đó là cái gì?",
+        "translation": "那是什么？",
+        "options": [
+            "Đó là cái gì?",
+            "Đó là cái dì?",
+            "Đó là cai gì?",
+            "Đó là cải gì?"
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 78.361083,
+        "end": 79.711083,
+        "correctAnswer": "Đó là tấm ảnh.",
+        "translation": "那是一张照片。",
+        "options": [
+            "Đó là tấm ảnh.",
+            "Đó là tấm ản.",
+            "Đó là tấm ảnhh.",
+            "Đó là tấm ãnh."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 80.251083,
+        "end": 81.411083,
+        "correctAnswer": "Đây là bức ảnh.",
+        "translation": "这是一张照片。",
+        "options": [
+            "Đây là bức ản.",
+            "Đây là bức ảnh.",
+            "Đây là bức ãnh.",
+            "Đây là bứt ảnh."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 81.981083,
+        "end": 83.601083,
+        "correctAnswer": "Đấy là tấm bản đồ.",
+        "translation": "那是一张地图。",
+        "options": [
+            "Đấy là tấm bảng đồ.",
+            "Đấy là tấm bản đồ.",
+            "Đấy là tắm bản đồ.",
+            "Đấy là tấm bản đô."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 84.001083,
+        "end": 85.461083,
+        "correctAnswer": "Kia là tấm vé.",
+        "translation": "那是一张票。",
+        "options": [
+            "Kia là tấm về.",
+            "Kia là tấm vé.",
+            "Kia là tẫm vé.",
+            "Kia là tâm vé."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 85.741083,
+        "end": 87.091083,
+        "correctAnswer": "Đó là bức tranh.",
+        "translation": "那是一幅画。",
+        "options": [
+            "Đó là bức chanh.",
+            "Đó là bức chình.",
+            "Đó là bức tranh.",
+            "Đó là bức trành."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 87.731083,
+        "end": 88.991083,
+        "correctAnswer": "Đây là bức tường.",
+        "translation": "这是墙。",
+        "options": [
+            "Đây là bức tường.",
+            "Đây là bức thường.",
+            "Đây là bức tương.",
+            "Đây là bức tườngg."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 89.481083,
+        "end": 90.881083,
+        "correctAnswer": "Đấy là bức thư.",
+        "translation": "那是一封信。",
+        "options": [
+            "Đấy là bức thưa.",
+            "Đấy là bức thư.",
+            "Đấy là bứt thư.",
+            "Đấy là bức thự."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 91.251083,
+        "end": 92.621083,
+        "correctAnswer": "Kia là tờ báo.",
+        "translation": "那是报纸。",
+        "options": [
+            "Kia là tờ bào.",
+            "Kia là tờ báo.",
+            "Kia là tờ bão.",
+            "Kia là tờ báp."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 92.891083,
+        "end": 94.351083,
+        "correctAnswer": "Đó là tờ giấy.",
+        "translation": "那是纸张。",
+        "options": [
+            "Đó là tờ giấy.",
+            "Đó là tờ dấy.",
+            "Đó là tờ dảy.",
+            "Đó là tờ giầy."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 94.691083,
+        "end": 95.801083,
+        "correctAnswer": "Đây là tờ lịch.",
+        "translation": "这是日历。",
+        "options": [
+            "Đây là tờ lích.",
+            "Đây là tờ lịch.",
+            "Đây là tờ lịc.",
+            "Đây là tờ lình."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 96.181083,
+        "end": 97.661083,
+        "correctAnswer": "Đấy là tờ hóa đơn.",
+        "translation": "那是发票。",
+        "options": [
+            "Đấy là tờ hóa đơn.",
+            "Đấy là tờ hoá đơn.",
+            "Đấy là tờ hóa đôn.",
+            "Đấy là tờ hóa đơnn."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 98.121083,
+        "end": 99.341083,
+        "correctAnswer": "Kia là quả gì?",
+        "translation": "那是水果吗？",
+        "options": [
+            "Kia là quả gì?",
+            "Kia là quả dì?",
+            "Kia là quả chi?",
+            "Kia là quà gì?"
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 99.611083,
+        "end": 101.071083,
+        "correctAnswer": "Kia là quả chuối.",
+        "translation": "那是香蕉。",
+        "options": [
+            "Kia là quả chuối.",
+            "Kia là quả chối.",
+            "Kia là quà chuối.",
+            "Kia là quả chưối."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 101.411083,
+        "end": 102.681083,
+        "correctAnswer": "Đó là quả gì?",
+        "translation": "那是水果吗？",
+        "options": [
+            "Đó là quả gì?",
+            "Đó là quà gì?",
+            "Đó là quả dì?",
+            "Đó là quả chi?"
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 103.001083,
+        "end": 104.501083,
+        "correctAnswer": "Đó là quả cam.",
+        "translation": "那是橙子。",
+        "options": [
+            "Đó là quả cam.",
+            "Đó là quả cám.",
+            "Đó là quả căm.",
+            "Đó là quà cam."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 104.941083,
+        "end": 106.361083,
+        "correctAnswer": "Đây là quả táo.",
+        "translation": "这是苹果。",
+        "options": [
+            "Đây là quà táo.",
+            "Đây là quả táo.",
+            "Đây là quả tảo.",
+            "Đây là quả táu."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 106.671083,
+        "end": 108.361083,
+        "correctAnswer": "Đấy là quả dưa hấu.",
+        "translation": "那是西瓜。",
+        "options": [
+            "Đấy là quả dưa hấu.",
+            "Đấy là quả dựa hấu.",
+            "Đấy là quả dưa hậu.",
+            "Đấy là quả dưa háu."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 108.841083,
+        "end": 110.321083,
+        "correctAnswer": "Kia là quả dứa.",
+        "translation": "那是菠萝。",
+        "options": [
+            "Kia là quả dừa.",
+            "Kia là quả dứa.",
+            "Kia là quả đứa.",
+            "Kia là quà dứa."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 110.741083,
+        "end": 112.151083,
+        "correctAnswer": "Đó là quả dừa.",
+        "translation": "那是椰子。",
+        "options": [
+            "Đó là quả vừa.",
+            "Đó là quạ dừa.",
+            "Đó là quả đừa.",
+            "Đó là quả dừa."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 112.521083,
+        "end": 114.231083,
+        "correctAnswer": "Đây là quả thanh long.",
+        "translation": "这是火龙果。",
+        "options": [
+            "Đây là quà thanh long.",
+            "Đây là quả tanh long.",
+            "Đây là quả thanh lông.",
+            "Đây là quả thanh long."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 114.641083,
+        "end": 115.871083,
+        "correctAnswer": "Đấy là trái đất.",
+        "translation": "那是地球。",
+        "options": [
+            "Đấy là trai đất.",
+            "Đấy là trái đật.",
+            "Đấy là rái đất.",
+            "Đấy là trái đất."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 116.401083,
+        "end": 117.791083,
+        "correctAnswer": "Kia là quả bóng.",
+        "translation": "那是球。",
+        "options": [
+            "Kia là quà bóng.",
+            "Kia là quả bóc.",
+            "Kia là quả móng.",
+            "Kia là quả bóng."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 118.091083,
+        "end": 119.471083,
+        "correctAnswer": "Đó là quả trứng.",
+        "translation": "那是鸡蛋。",
+        "options": [
+            "Đó là quạ trứng.",
+            "Đó là quả trưng.",
+            "Đó là quả trấng.",
+            "Đó là quả trứng."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 119.801083,
+        "end": 121.181083,
+        "correctAnswer": "Đây là bông hoa.",
+        "translation": "这是花朵。",
+        "options": [
+            "Đây là bóng hoa.",
+            "Đây là bông hóa.",
+            "Đây là bông hoà.",
+            "Đây là bông hoa."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 121.641083,
+        "end": 123.121083,
+        "correctAnswer": "Đấy là củ gì?",
+        "translation": "那是根什么？",
+        "options": [
+            "Đấy là cụ gì?",
+            "Đấy là củ dì?",
+            "Đấy là cũ gì?",
+            "Đấy là củ gì?"
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 123.421083,
+        "end": 124.811083,
+        "correctAnswer": "Đấy là củ tỏi.",
+        "translation": "那是蒜头。",
+        "options": [
+            "Đới là củ tòi.",
+            "Đới là cổ tỏi.",
+            "Đấy là cổ tỏi.",
+            "Đấy là củ tỏi."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 125.251083,
+        "end": 126.621083,
+        "correctAnswer": "Kia là củ gì?",
+        "translation": "那是根什么？",
+        "options": [
+            "Kìa là củ gì?",
+            "Kia là cũ gì?",
+            "Kia là cù gì?",
+            "Kia là củ gì?"
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 126.891083,
+        "end": 128.441083,
+        "correctAnswer": "Kia là củ cà rốt.",
+        "translation": "那是胡萝卜。",
+        "options": [
+            "Kia là củ cả rốt.",
+            "Kia là cụ cà rốt.",
+            "Kia là củ cà rốp.",
+            "Kia là củ cà rốt."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 128.901083,
+        "end": 130.271083,
+        "correctAnswer": "Đó là củ gì?",
+        "translation": "那是什麼根？",
+        "options": [
+            "Đó là cụ gì?",
+            "Đó là củ dí?",
+            "Đó là gủ gì?",
+            "Đó là củ gì?"
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 130.521083,
+        "end": 131.821083,
+        "correctAnswer": "Đó là củ gừng.",
+        "translation": "那是姜。",
+        "options": [
+            "Đó là củ gần.",
+            "Đó là cụ gừng.",
+            "Đó là củ gưng.",
+            "Đó là củ gừng."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 132.481083,
+        "end": 134.201083,
+        "correctAnswer": "Đây là củ khoai tây.",
+        "translation": "这是土豆。",
+        "options": [
+            "Đây là củ khon tây.",
+            "Đây là cụ khoai tây.",
+            "Đây là củ khoi tây.",
+            "Đây là củ khoai tây."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 134.541083,
+        "end": 136.271083,
+        "correctAnswer": "Đấy là củ khoai lang.",
+        "translation": "那是红薯。",
+        "options": [
+            "Đấy là cụ khoai lang.",
+            "Đấy là củ khoai lăng.",
+            "Đấy là cũ khoai lang.",
+            "Đấy là củ khoai lang."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 136.741083,
+        "end": 138.011083,
+        "correctAnswer": "Kia là con gì?",
+        "translation": "那是什麼动物？",
+        "options": [
+            "Kia là còn gì?",
+            "Kia là côn gì?",
+            "Kìa là con gì?",
+            "Kia là con gì?"
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 138.221083,
+        "end": 139.561083,
+        "correctAnswer": "Kia là con gà.",
+        "translation": "那是鸡。",
+        "options": [
+            "Kia là còn gà.",
+            "Kia là con cà.",
+            "Kia là côn gà.",
+            "Kia là con gà."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 139.991083,
+        "end": 141.361083,
+        "correctAnswer": "Đó là con mèo.",
+        "translation": "那是猫。",
+        "options": [
+            "Đó là còn mèo.",
+            "Đó là con mẻo.",
+            "Đó là côn mèo.",
+            "Đó là con mèo."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 141.781083,
+        "end": 143.151083,
+        "correctAnswer": "Đây là con bò.",
+        "translation": "这是牛。",
+        "options": [
+            "Đây là côn bò.",
+            "Đây là còn bò.",
+            "Đây là con bô.",
+            "Đây là con bò."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 143.571083,
+        "end": 144.961083,
+        "correctAnswer": "Đấy là con chim.",
+        "translation": "那是鸟。",
+        "options": [
+            "Đấy là côn chim.",
+            "Đấy là con chím.",
+            "Đấy là còn chim.",
+            "Đấy là con chim."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 145.261083,
+        "end": 146.811083,
+        "correctAnswer": "Kia là con chó.",
+        "translation": "那是狗。",
+        "options": [
+            "Kia là còn chó.",
+            "Kia là con chò.",
+            "Kìa là con chó.",
+            "Kia là con chó."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 147.201083,
+        "end": 148.601083,
+        "correctAnswer": "Đó là con cá.",
+        "translation": "那是鱼。",
+        "options": [
+            "Đó là còn cá.",
+            "Đó là côn cá.",
+            "Đó là con cã.",
+            "Đó là con cá."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 149.001083,
+        "end": 150.381083,
+        "correctAnswer": "Đây là con tôm.",
+        "translation": "这是虾。",
+        "options": [
+            "Đây là con tôn.",
+            "Đây là côn tôm.",
+            "Đây là còn tôm.",
+            "Đây là con tôm."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 150.821083,
+        "end": 152.061083,
+        "correctAnswer": "Đấy là con lợn.",
+        "translation": "那是猪。",
+        "options": [
+            "Đấy là con lớt.",
+            "Đấy là còn lợn.",
+            "Đấy là côn lợn.",
+            "Đấy là con lợn."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 152.561083,
+        "end": 153.971083,
+        "correctAnswer": "Kia là con ngựa.",
+        "translation": "那是马。",
+        "options": [
+            "Kia là còn ngựa.",
+            "Kia là con ngũa.",
+            "Kia là côn ngựa.",
+            "Kia là con ngựa."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 154.381083,
+        "end": 155.921083,
+        "correctAnswer": "Đó là con voi.",
+        "translation": "那是大象。",
+        "options": [
+            "Đó là còn voi.",
+            "Đó là con voi.",
+            "Đó là côn voi.",
+            "Đó là con vôi."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 156.251083,
+        "end": 157.951083,
+        "correctAnswer": "Đây là cái ba lô.",
+        "translation": "这是背包。",
+        "options": [
+            "Đây là cái ba ló.",
+            "Đây là cãi ba lô.",
+            "Đây là cái pa lô.",
+            "Đây là cái ba lô."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 158.311083,
+        "end": 159.651083,
+        "correctAnswer": "Đấy là kéo.",
+        "translation": "那是剪刀。",
+        "options": [
+            "Đấy là kèo.",
+            "Đấy là keo.",
+            "Đấy là kẻo.",
+            "Đấy là kéo."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 159.921083,
+        "end": 161.501083,
+        "correctAnswer": "Kia là cái túi.",
+        "translation": "那是包。",
+        "options": [
+            "Kìa là cái túi.",
+            "Kia là cãi túi.",
+            "Kia là cái tui.",
+            "Kia là cái túi."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 161.781083,
+        "end": 163.041083,
+        "correctAnswer": "Đó là cái gì?",
+        "translation": "那是什麼？",
+        "options": [
+            "Đó là cãi gì?",
+            "Đó là cái dí?",
+            "Đó là gài gì?",
+            "Đó là cái gì?"
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 163.281083,
+        "end": 164.991083,
+        "correctAnswer": "Đó là chiếc xe máy.",
+        "translation": "那是一辆摩托车。",
+        "options": [
+            "Đó là chiếc xê máy.",
+            "Đó là chiệc xe máy.",
+            "Đó là chiếc xẻ máy.",
+            "Đó là chiếc xe máy."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 166.521083,
+        "end": 168.501083,
+        "correctAnswer": "Đây là cái ô tô.",
+        "translation": "这是汽车。",
+        "options": [
+            "Đây là cái ố tô.",
+            "Đây là cái ô tồ.",
+            "Đây là cai ô tô.",
+            "Đây là cái ô tô."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 168.791083,
+        "end": 170.561083,
+        "correctAnswer": "Đấy là cái cốc.",
+        "translation": "那是杯子。",
+        "options": [
+            "Đấy là cái cốp.",
+            "Đới là cai cốc.",
+            "Đới là cái cốc.",
+            "Đấy là cái cốc."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 171.091083,
+        "end": 173.171083,
+        "correctAnswer": "Kia là cái máy vi tính.",
+        "translation": "那是电脑。",
+        "options": [
+            "Kìa là cái máy vi tính.",
+            "Kia là cái mảy vi tính.",
+            "Kia là cái máy vi tĩnh.",
+            "Kia là cái máy vi tính."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 173.761083,
+        "end": 175.561083,
+        "correctAnswer": "Đó là quả ớt.",
+        "translation": "那是辣椒。",
+        "options": [
+            "Đó là quả ết.",
+            "Đó là quả ớp.",
+            "Đó là quà ớt.",
+            "Đó là quả ớt."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 175.981083,
+        "end": 177.781083,
+        "correctAnswer": "Đây là củ hành.",
+        "translation": "这是洋葱。",
+        "options": [
+            "Đây là cụ hành.",
+            "Đây là củ hạnh.",
+            "Đây là cũ hành.",
+            "Đây là củ hành."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 178.251083,
+        "end": 180.371083,
+        "correctAnswer": "Đấy là quả dâu tây.",
+        "translation": "那是草莓。",
+        "options": [
+            "Đấy là quả râu tây.",
+            "Đới là quả dâu tay.",
+            "Đới là quả dâu tây.",
+            "Đấy là quả dâu tây."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 180.771083,
+        "end": 182.581083,
+        "correctAnswer": "Kia là quả táo.",
+        "translation": "那是苹果。",
+        "options": [
+            "Kia là quả tảo.",
+            "Kia là quà táo.",
+            "Kìa là quả táo.",
+            "Kia là quả táo."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 183.051083,
+        "end": 184.911083,
+        "correctAnswer": "Đó là quả trứng.",
+        "translation": "那是鸡蛋。",
+        "options": [
+            "Đó là quà trứng.",
+            "Đó là quả trụng.",
+            "Đó là quả trứng.",
+            "Đó là quả cứng."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 185.281083,
+        "end": 187.131083,
+        "correctAnswer": "Đây là quả chuối.",
+        "translation": "这是香蕉。",
+        "options": [
+            "Đây là quả chối.",
+            "Đây là quả chưởi.",
+            "Đây là quả chuối.",
+            "Đây là quà chuối."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 187.501083,
+        "end": 189.351083,
+        "correctAnswer": "Đấy là quả nho.",
+        "translation": "那是葡萄。",
+        "options": [
+            "Đấy là quà nho.",
+            "Đấy là quả nhô.",
+            "Đấy là quả nhỏ.",
+            "Đấy là quả nho."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 189.761083,
+        "end": 191.851083,
+        "correctAnswer": "Kia là quả cà chua.",
+        "translation": "那是番茄。",
+        "options": [
+            "Kia là quả cả chua.",
+            "Kìa là quả cà chua.",
+            "Kia là quả cà chuà.",
+            "Kia là quả cà chua."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 192.181083,
+        "end": 194.011083,
+        "correctAnswer": "Đó là quả khế.",
+        "translation": "那是杨桃。",
+        "options": [
+            "Đó là quả kế.",
+            "Đó là quà khế.",
+            "Đó là quả khê.",
+            "Đó là quả khế."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 194.421083,
+        "end": 196.121083,
+        "correctAnswer": "Đây là quả chanh.",
+        "translation": "这是柠檬。",
+        "options": [
+            "Đây là quả chang.",
+            "Đây là quà chanh.",
+            "Đây là quả chanh.",
+            "Đây là quả chảnh."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 196.561083,
+        "end": 198.321083,
+        "correctAnswer": "Đấy là quả quýt.",
+        "translation": "那是橘子。",
+        "options": [
+            "Đấy là quà quýt.",
+            "Đấy là của quýt.",
+            "Đấy là của quỳt.",
+            "Đấy là quả quýt."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 198.771083,
+        "end": 200.571083,
+        "correctAnswer": "Kia là quả nhãn.",
+        "translation": "那是龙眼。",
+        "options": [
+            "Kia là quả nhẫn.",
+            "Kìa là quả nhãn.",
+            "Kia là quà nhãn.",
+            "Kia là quả nhãn."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 201.051083,
+        "end": 202.831083,
+        "correctAnswer": "Đó là củ gừng.",
+        "translation": "那是姜。",
+        "options": [
+            "Đó là cụ gừng.",
+            "Đó là củ gưng.",
+            "Đó là cũ gừng.",
+            "Đó là củ gừng."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 203.181083,
+        "end": 205.031083,
+        "correctAnswer": "Đây là quả dứa.",
+        "translation": "这是菠萝。",
+        "options": [
+            "Đây là quả đứa.",
+            "Đây là quà dứa.",
+            "Đây là quả dưa.",
+            "Đây là quả dứa."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 205.341083,
+        "end": 207.351083,
+        "correctAnswer": "Đấy là quả dưa chuột.",
+        "translation": "那是黄瓜。",
+        "options": [
+            "Đấy là quà dưa chuột.",
+            "Đấy là quả dưa chuốt.",
+            "Đấy là quả dứa chuột.",
+            "Đấy là quả dưa chuột."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 207.731083,
+        "end": 209.631083,
+        "correctAnswer": "Đây là quả vải.",
+        "translation": "这是荔枝。",
+        "options": [
+            "Đây là quả vài.",
+            "Đây là quả vải.",
+            "Đây là quả vãi.",
+            "Đây là quà vải."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 210.071083,
+        "end": 211.691083,
+        "correctAnswer": "Kia là con gì?",
+        "translation": "那是什麼动物？",
+        "options": [
+            "Kia là còn gì?",
+            "Kìa là con gì?",
+            "Kia là côn gì?",
+            "Kia là con gì?"
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 212.221083,
+        "end": 213.981083,
+        "correctAnswer": "Kia là con trâu.",
+        "translation": "那是水牛。",
+        "options": [
+            "Kia là con trao.",
+            "Kia là còn trâu.",
+            "Kìa là con trâu.",
+            "Kia là con trâu."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 214.351083,
+        "end": 216.291083,
+        "correctAnswer": "Đó là con gà trống.",
+        "translation": "那是公鸡。",
+        "options": [
+            "Đó là con gà trọng.",
+            "Đó là còn gà trống.",
+            "Đó là con gà tróng.",
+            "Đó là con gà trống."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 216.731083,
+        "end": 218.881083,
+        "correctAnswer": "Đây là con gà mái.",
+        "translation": "这是母鸡。",
+        "options": [
+            "Đây là còn gà mái.",
+            "Đây là con gà mãi.",
+            "Đây là con gà mại.",
+            "Đây là con gà mái."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 219.211083,
+        "end": 220.901083,
+        "correctAnswer": "Đấy là con vịt.",
+        "translation": "那是鸭子。",
+        "options": [
+            "Đấy là con vít.",
+            "Đấy là còn vịt.",
+            "Đấy là côn vịt.",
+            "Đấy là con vịt."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 221.441083,
+        "end": 223.111083,
+        "correctAnswer": "Kia là con chuột.",
+        "translation": "那是老鼠。",
+        "options": [
+            "Kia là côn chuột.",
+            "Kìa là con chuột.",
+            "Kia là con chụt.",
+            "Kia là con chuột."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 223.571083,
+        "end": 225.481083,
+        "correctAnswer": "Đó là con hổ.",
+        "translation": "那是老虎。",
+        "options": [
+            "Đó là côn hổ.",
+            "Đó là con hỗ.",
+            "Đó là còn hổ.",
+            "Đó là con hổ."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 225.941083,
+        "end": 227.741083,
+        "correctAnswer": "Đây là con chim.",
+        "translation": "这是鸟。",
+        "options": [
+            "Đây là con chím.",
+            "Đây là côn chim.",
+            "Đây là còn chim.",
+            "Đây là con chim."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 228.191083,
+        "end": 229.981083,
+        "correctAnswer": "Đấy là con rắn.",
+        "translation": "那是蛇。",
+        "options": [
+            "Đấy là còn rắn.",
+            "Đấy là con rẳn.",
+            "Đấy là côn rắn.",
+            "Đấy là con rắn."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 230.491083,
+        "end": 232.251083,
+        "correctAnswer": "Kia là con tôm.",
+        "translation": "那是虾。",
+        "options": [
+            "Kia là côn tôm.",
+            "Kia là con tôn.",
+            "Kìa là con tôm.",
+            "Kia là con tôm."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 232.801083,
+        "end": 234.641083,
+        "correctAnswer": "Đó là con bò.",
+        "translation": "那是牛。",
+        "options": [
+            "Đó là còn bò.",
+            "Đó là côn bò.",
+            "Đó là con bô.",
+            "Đó là con bò."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 234.961083,
+        "end": 236.931083,
+        "correctAnswer": "Đây là con cá.",
+        "translation": "这是鱼。",
+        "options": [
+            "Đây là còn cá.",
+            "Đây là con cã.",
+            "Đây là côn cá.",
+            "Đây là con cá."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 237.281083,
+        "end": 239.251083,
+        "correctAnswer": "Đấy là con chó.",
+        "translation": "那是狗。",
+        "options": [
+            "Đấy là con chò.",
+            "Đấy là còn chó.",
+            "Đấy là côn chó.",
+            "Đấy là con chó."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 239.681083,
+        "end": 241.361083,
+        "correctAnswer": "Kia là cái gì?",
+        "translation": "那是什麼？",
+        "options": [
+            "Kia là cãi gì?",
+            "Kìa là cái gì?",
+            "Kia là cái dí?",
+            "Kia là cái gì?"
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 241.961083,
+        "end": 243.841083,
+        "correctAnswer": "Kia là cái ấm.",
+        "translation": "那是壶。",
+        "options": [
+            "Kìa là cái ấm.",
+            "Kia là cai ấm.",
+            "Kia là cái ẳm.",
+            "Kia là cái ấm."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 244.251083,
+        "end": 246.141083,
+        "correctAnswer": "Đó là cái siêu.",
+        "translation": "那是小水壶。",
+        "options": [
+            "Đó là cái xiu.",
+            "Đó là cãi siêu.",
+            "Đó là cái xiêu.",
+            "Đó là cái siêu."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 246.511083,
+        "end": 248.281083,
+        "correctAnswer": "Đây là cái quạt.",
+        "translation": "这是扇子。",
+        "options": [
+            "Đây là cái quát.",
+            "Đây là cái quạch.",
+            "Đây là cái quặt.",
+            "Đây là cái quạt."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 248.731083,
+        "end": 250.751083,
+        "correctAnswer": "Đấy là cái quạt điện.",
+        "translation": "那是电风扇。",
+        "options": [
+            "Đấy là cái quạt điển.",
+            "Đấy là cái quạch điện.",
+            "Đấy là cái quạt biển.",
+            "Đấy là cái quạt điện."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 251.241083,
+        "end": 253.101083,
+        "correctAnswer": "Kia là con dao.",
+        "translation": "那是刀子。",
+        "options": [
+            "Kìa là con dao.",
+            "Kia là côn dao.",
+            "Kia là con dào.",
+            "Kia là con dao."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 253.491083,
+        "end": 255.741083,
+        "correctAnswer": "Đó là cái nồi cơm điện.",
+        "translation": "那是电饭锅。",
+        "options": [
+            "Đó là cái nồi cơm điển.",
+            "Đó là cái nồi cơm biển.",
+            "Đó là cái nồi cơm điẹn.",
+            "Đó là cái nồi cơm điện."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 256.191083,
+        "end": 258.791083,
+        "correctAnswer": "Đấy là cái bàn chải đánh răng.",
+        "translation": "那是牙刷。",
+        "options": [
+            "Đấy là cái bàn chãi đánh răng.",
+            "Đấy là cái bàng chải đánh răng.",
+            "Đấy là cái bàn chải đảnh răng.",
+            "Đấy là cái bàn chải đánh răng."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 259.201083,
+        "end": 260.991083,
+        "correctAnswer": "Kia là cái thuyền.",
+        "translation": "那是船。",
+        "options": [
+            "Kia là cái thuyèn.",
+            "Kìa là cái thuyền.",
+            "Kia là cái thuyết.",
+            "Kia là cái thuyền."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 261.721083,
+        "end": 263.901083,
+        "correctAnswer": "Đó là cái lọ hoa.",
+        "translation": "那是花瓶。",
+        "options": [
+            "Đó là cái lọ hòa.",
+            "Đó là cái lọ hoà.",
+            "Đó là cái lọ hỏa.",
+            "Đó là cái lọ hoa."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 264.131083,
+        "end": 265.843,
+        "correctAnswer": "Đây là cái nón.",
+        "translation": "这是帽子。",
+        "options": [
+            "Đây là cai nón.",
+            "Đây là cái non.",
+            "Đây là cãi nón.",
+            "Đây là cái nón."
+        ]
+    }
+];
+
+        let currentIndex = 0;
+        let isFreeMode = true;
+        let correctCount = 0;
+        let isPlaying = false;
+        let correctSentences = new Set();
+        let wrongSentences = new Set();
+        let autoContinue = false;
+        let showAnswer = false;
+        let userAnswers = [];
+
+        // Fisher-Yates shuffle algorithm
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        function init() {
+            updateSentenceDisplay();
+        }
+
+        function updateSentenceDisplay() {
+            sentenceNumber.value = currentIndex + 1;
+            indicator.style.background = '#ffffe0';
+            if (isFreeMode && showAnswer) {
+                indicator.innerHTML = `
+                    <div style="font-size: 18px; font-weight: bold; color: #85ae5f;">${sentences[currentIndex].translation}</div>
+                `;
+            } else {
+                indicator.innerHTML = '';
+            }
+            updateOptions();
+            if (!isFreeMode) updateScore();
+        }
+
+        function updateOptions() {
+            optionsContainer.innerHTML = '';
+            const shuffledOptions = shuffleArray(sentences[currentIndex].options);
+            shuffledOptions.forEach((option, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'optionBtn';
+                btn.textContent = option;
+                btn.onclick = () => checkAnswer(option);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function playCurrentSentence() {
+            if (isPlaying) audio.pause();
+            buttons.forEach(btn => btn.classList.add('disabled'));
+            sentenceNumber.disabled = true;
+            isPlaying = true;
+            audio.src = sentences[currentIndex].audioFile;
+            audio.currentTime = sentences[currentIndex].start;
+            audio.play().catch(error => {
+                console.error('Audio playback failed:', error);
+                alert('Vui lòng nhấn nút “再听一遍” để phát âm thanh.');
+                buttons.forEach(btn => btn.classList.remove('disabled'));
+                sentenceNumber.disabled = false;
+                isPlaying = false;
+            });
+
+            audio.ontimeupdate = () => {
+                if (audio.currentTime >= sentences[currentIndex].end) {
+                    audio.pause();
+                    audio.ontimeupdate = null;
+                    buttons.forEach(btn => btn.classList.remove('disabled'));
+                    sentenceNumber.disabled = false;
+                    isPlaying = false;
+                }
+            };
+        }
+
+        function moveSentence(direction) {
+            currentIndex = (currentIndex + direction + sentences.length) % sentences.length;
+            updateSentenceDisplay();
+            playCurrentSentence();
+        }
+
+        function checkAnswer(selectedAnswer) {
+            const correctAnswer = sentences[currentIndex].correctAnswer;
+            const optionButtons = optionsContainer.getElementsByClassName('optionBtn');
+            
+            // Clear previous styles
+            for (let btn of optionButtons) {
+                btn.classList.remove('correct', 'wrong');
+                btn.disabled = !isFreeMode; // Only disable buttons in Test Mode
+            }
+
+            // Find and style the selected button
+            for (let btn of optionButtons) {
+                if (btn.textContent === selectedAnswer) {
+                    if (selectedAnswer === correctAnswer) {
+                        indicator.style.background = '#B7D7AA';
+                                                indicator.innerHTML = `
+                    <div style="font-size: 18px; font-weight: bold; color: #000000;">${sentences[currentIndex].translation}</div>
+                `;
+                        btn.classList.add('correct');
+                        correctAudio.play().catch(error => {
+                            console.error('Correct audio playback failed:', error);
+                        });
+                    } else {
+                        indicator.style.background = '#CE6D5E';
+                                                indicator.innerHTML = `
+                    <div style="font-size: 18px; font-weight: bold; color: #000000;">${sentences[currentIndex].translation}</div>
+                `;
+                        btn.classList.add('wrong');
+                        wrongAudio.play().catch(error => {
+                            console.error('Wrong audio playback failed:', error);
+                        });
+                    }
+                }
+            }
+
+            if (!isFreeMode) {
+                userAnswers[currentIndex] = selectedAnswer;
+                if (selectedAnswer === correctAnswer && !correctSentences.has(currentIndex)) {
+                    correctCount++;
+                    correctSentences.add(currentIndex);
+                    wrongSentences.delete(currentIndex);
+                } else if (selectedAnswer !== correctAnswer && !correctSentences.has(currentIndex)) {
+                    wrongSentences.add(currentIndex);
+                }
+                updateScore();
+
+                // Auto-move to next sentence in Test Mode
+                const audioToWait = (selectedAnswer === correctAnswer) ? correctAudio : wrongAudio;
+                audioToWait.onended = () => {
+                    if (userAnswers.length === sentences.length) {
+                        showResults();
+                    } else {
+                        setTimeout(() => {
+                            moveSentence(1);
+                        }, 200);
+                    }
+                };
+            } else if (isFreeMode && autoContinue && selectedAnswer === correctAnswer) {
+                // Auto-move in Free Mode only if answer is correct and autoContinue is enabled
+                correctAudio.onended = () => {
+                    setTimeout(() => {
+                        moveSentence(1);
+                    }, 200);
+                };
+            } else {
+                correctAudio.onended = null;
+                wrongAudio.onended = null;
+            }
+        }
+
+        function updateScore() {
+            scoreDisplay.textContent = `${correctCount}/${sentences.length}`;
+            scoreDisplay.style.display = 'block'; // Hiển thị score trong Test Mode
+        }
+
+        function showResults() {
+            let resultText = `练习完成！\n正确答案数量：${correctCount}/${sentences.length}\n正确率：${((correctCount / sentences.length) * 100).toFixed(2)}%\n错误题目：`;
+            wrongSentences.forEach(index => {
+                resultText += `\n第${index + 1}题：\n你的选择：${userAnswers[index] || '未选择'}\n正确答案：${sentences[index].correctAnswer}\n`;
+            });
+            if (wrongSentences.size === 0) {
+                resultText += '\n全部正确！';
+            }
+            resultsDisplay.textContent = resultText;
+            resultsDisplay.style.display = 'block';
+        }
+
+        prevBtn.onclick = () => {
+            moveSentence(-1);
+        };
+
+        nextBtn.onclick = () => {
+            moveSentence(1);
+        };
+
+        replayBtn.onclick = () => {
+            playCurrentSentence();
+        };
+
+        freeModeBtn.onclick = () => {
+            isFreeMode = true;
+            freeModeBtn.classList.add('active-mode');
+            testModeBtn.classList.remove('active-mode');
+            autoContinueBtn.disabled = false;
+            autoContinueBtn.classList.remove('disabled');
+            showHideBtn.disabled = false;
+            showHideBtn.classList.remove('disabled');
+            scoreDisplay.style.display = 'none';
+            wrongSentencesDisplay.style.display = 'none';
+            resultsDisplay.style.display = 'none';
+            updateSentenceDisplay();
+        };
+
+        testModeBtn.onclick = () => {
+            isFreeMode = false;
+            testModeBtn.classList.add('active-mode');
+            freeModeBtn.classList.remove('active-mode');
+            autoContinueBtn.disabled = true;
+            autoContinueBtn.classList.add('disabled');
+            showHideBtn.disabled = true;
+            showHideBtn.classList.add('disabled');
+            showHideBtn.classList.remove('active-mode');
+            showAnswer = false;
+            scoreDisplay.style.display = 'block';
+            currentIndex = 0;
+            correctCount = 0;
+            correctSentences.clear();
+            wrongSentences.clear();
+            userAnswers = [];
+            for (let i = 0; i < sentences.length; i++) {
+                wrongSentences.add(i);
+            }
+            updateSentenceDisplay();
+        };
+
+        autoContinueBtn.onclick = () => {
+            if (isFreeMode) {
+                autoContinue = !autoContinue;
+                autoContinueBtn.classList.toggle('active-mode');
+                if (!autoContinue) {
+                    correctAudio.onended = null;
+                }
+            }
+        };
+
+        showHideBtn.onclick = () => {
+            if (isFreeMode) {
+                showAnswer = !showAnswer;
+                showHideBtn.classList.toggle('active-mode');
+                updateSentenceDisplay();
+            }
+        };
+
+        sentenceNumber.onchange = () => {
+            if (!isPlaying) {
+                const num = parseInt(sentenceNumber.value) - 1;
+                if (!isNaN(num) && num >= 0 && num < sentences.length) {
+                    currentIndex = num;
+                    updateSentenceDisplay();
+                    playCurrentSentence();
+                } else {
+                    alert(`输入范围： 1 到 ${sentences.length}`);
+                    updateSentenceDisplay();
+                }
+            }
+        };
+
+        sentenceNumber.onkeydown = (e) => {
+            if (!isPlaying) {
+                if (e.key === 'ArrowLeft') {
+                    moveSentence(-1);
+                }
+                if (e.key === 'ArrowRight') {
+                    moveSentence(1);
+                }
+            }
+        };
+
+        init();
+    </script>
+</body>
+</html>
